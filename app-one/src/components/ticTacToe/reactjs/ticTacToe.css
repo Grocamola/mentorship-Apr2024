@@ -54,3 +54,39 @@
 .messageBox button:active { 
     transform: scale(0.98)
 }
+
+
+.markLine { 
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* transform: translateX(-50%) translateY(-50%); */
+    height: 150px;
+    width: 5px;
+    border-radius: 4px;
+    background-color: red;
+}
+.col-right { 
+    transform: translateX(55px) translateY(-50%)
+}
+.col-center { 
+    transform: translateX(-50%) translateY(-50%)
+}
+.col-left { 
+    transform: translateX(-65px) translateY(-50%)
+}
+.row-up { 
+    transform: rotate(90deg) translateX(-135px) translateY(5px)
+}
+.row-center { 
+    transform: rotate(90deg) translateX(-75px) translateY(5px)
+}
+.row-down { 
+    transform: rotate(90deg) translateX(-15px) translateY(5px)
+}
+.diagonal-left { 
+    transform: rotate(-45deg) translateX(50px) translateY(-50px) scale(1.3)
+}
+.diagonal-right { 
+    transform: rotate(45deg) translateX(-60px) translateY(-50px) scale(1.3)
+}
