@@ -42,3 +42,7 @@ body {
 #resetButton:active { 
     transform: scale(0.99) translateY(0.5px)
 }
+
+.winnerColor {
+    background-color: rgba(255, 68, 0, 0.3);
+}

@@ -46,6 +46,12 @@ function cellClicked(index) {
         winnerMessage.innerHTML = `${currentPlayer} wins!`
         scoreBoardMessage.innerHTML = `Player X: ${scoreBoard.filter(player => player === 'X').length} - Player O: ${scoreBoard.filter(player => player === 'O').length}`
         gameActive = false;
+
+        const winnerCells = winConditions.filter(condition => condition.every(index => board[index] === currentPlayer))[0];
+        if (winnerCells) {
+            winnerCells.forEach(index => gameBoard.children[index].classList.add('winnerColor'));
+        }
+
         return;
     }
 
