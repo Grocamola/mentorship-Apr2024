@@ -12,7 +12,7 @@ import './ticTacToe.css';
 const TicTacToe = () => {
 
     const [state, setState] = useState([])
-    const [player, setPlayer] = useState("X")
+    const [player, setPlayer] = useState()
     const [winner, setWinner] = useState()
     const [markClass, setMarkClass] = useState()
     const [scoreBoard, setScoreBoard] = useState({PlayerX: 0, PlayerO: 0})
@@ -41,9 +41,15 @@ const TicTacToe = () => {
         status.every(item => item === true) && !winner && setWinner('no one, sorry :)')
     },[state, winner])
 
+
+
+
     const UpdateBoardHandler = (row, box) => { 
-        console.log(row, box, player)
-        UpdateGame({row, box, winner, setState, setPlayer, player})
+        // console.log(row, box, player)
+        const rowIndex = state.indexOf(row)
+        const boxIndex = row.indexOf(box)
+        // console.log(rowIndex, boxIndex)
+        UpdateGame({rowIndex, boxIndex, winner, state, setState, setPlayer, player})
     }
     
 
