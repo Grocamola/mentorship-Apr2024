@@ -10,7 +10,7 @@ const StartGame = ({ setState, setPlayer, setWinner, setMarkClass }) => {
             return response.json();
         })
         .then(data => {
-            console.log('Board fetched successfully:', data);
+            // console.log('Board fetched successfully:', data);
 
             setState(data.board);
             setPlayer(data.winner === "X" || data.winner === "O" ? data.winner : "X");

@@ -22,12 +22,13 @@ const UpdateGame = ({rowIndex, boxIndex, setWinner, state, setState, setPlayer, 
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Board fetched and updated successfully:', data);
+                    // console.log('Board fetched and updated successfully:', data);
 
                     if(data.winner === '') { 
                        setState(data.board) 
                        setPlayer(player => player === "X" ? "O" : "X");
                     } else { 
+                        setState(data.board) 
                         setWinner(data.winner)
                         setMarkClass(data.winnerClass);
                         setPlayer(data.winner);
