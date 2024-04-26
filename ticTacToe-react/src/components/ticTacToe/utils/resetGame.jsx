@@ -17,10 +17,10 @@ const ResetGame = (props) => {
         .then(data => {
             console.log('Board resetted successfully:', data);
 
-            props.setState(data);
+            props.setState(data.board);
             props.setPlayer(props.winner === "X" || props.winner === "O" ? props.winner : "X")
-            props.setWinner();
-            props.setMarkClass();
+            props.setWinner(data.winner);
+            props.setMarkClass(data.winnerClass);
         })
         .catch(error => {
             console.error('Error resetting the board:', error);

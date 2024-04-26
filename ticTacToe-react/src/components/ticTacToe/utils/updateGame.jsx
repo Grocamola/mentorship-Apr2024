@@ -1,5 +1,5 @@
 
-const UpdateGame = ({rowIndex, boxIndex, setWinner, winner, state, setState, setPlayer, player}) => {
+const UpdateGame = ({rowIndex, boxIndex, setWinner, state, setState, setPlayer, player, setMarkClass}) => {
 
     // console.log(rowIndex, boxIndex, player)
 
@@ -22,12 +22,16 @@ const UpdateGame = ({rowIndex, boxIndex, setWinner, winner, state, setState, set
                     return response.json();
                 })
                 .then(data => {
-                    console.log('Board fetched successfully:', data);
+                    console.log('Board fetched and updated successfully:', data);
 
-                    setState(data.board)
-                    // setWinner(data.winner)
-                    setPlayer(prev => prev === "X" ? "O" : "X");
-
+                    if(data.winner === '') { 
+                       setState(data.board) 
+                       setPlayer(player => player === "X" ? "O" : "X");
+                    } else { 
+                        setWinner(data.winner)
+                        setMarkClass(data.winnerClass);
+                        setPlayer(data.winner);
+                    }
                 })
                 .catch(error => {
                     console.error('Update failed. Error fetching the board:', error);

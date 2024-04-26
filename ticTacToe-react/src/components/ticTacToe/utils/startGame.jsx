@@ -1,14 +1,8 @@
 
 
 
-const StartGame = (props) => {
-    try {
-        fetch('http://localhost:5000/board/', { 
-            method: 'GET', 
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
+const StartGame = ({ setState, setPlayer, setWinner, setMarkClass }) => {
+    fetch('http://localhost:5000/board/')
         .then(response => {
             if (!response.ok) {
                 throw new Error('Failed to fetch the board, Bad response.');
@@ -18,19 +12,14 @@ const StartGame = (props) => {
         .then(data => {
             console.log('Board fetched successfully:', data);
 
-            props.setState(data.board);
-            props.setPlayer(props.winner === "X" || props.winner === "O" ? props.winner : "X")
-            props.setWinner(data.winner);
-            props.setMarkClass();
+            setState(data.board);
+            setPlayer(data.winner === "X" || data.winner === "O" ? data.winner : "X");
+            setWinner('');
+            setMarkClass('');
         })
         .catch(error => {
             console.error('Error fetching the board:', error);
         });
-    } catch (error) {
-        console.error('Error occurred while fetching data:', error);
-    }
-
-    return null;
-}
+};
 
 export default StartGame;
