@@ -43,7 +43,9 @@
 .scoreBoard { 
     margin: auto;
 }
-.messageBox button { 
+
+
+button { 
     border: none;
     Background-color: navy;
     color: white;
@@ -52,7 +54,7 @@
     padding: 6px 12px;
     cursor: pointer;
 }
-.messageBox button:active { 
+button:active { 
     transform: scale(0.98)
 }
 
