@@ -15,7 +15,7 @@ const ResetGame = (props) => {
             return response.json();
         })
         .then(data => {
-            // console.log('Board resetted successfully:', data);
+            console.log('Board resetted successfully:', data);
 
             props.setState(data.board);
             props.setPlayer(props.winner === "X" || props.winner === "O" ? props.winner : "X")
@@ -28,6 +28,8 @@ const ResetGame = (props) => {
     } catch (error) {
         console.error('Error occurred while fetching data:', error);
     }
+
+    return;
 }
 
 export default ResetGame;

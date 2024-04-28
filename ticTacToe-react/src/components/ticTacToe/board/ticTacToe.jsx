@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
+import { useSpring, animated } from '@react-spring/web'
 
-import StartGame from '../utils/startGame';
+
+
 import ResetGame from '../utils/resetGame';
 import UpdateGame from '../utils/updateGame';
 
@@ -16,45 +18,45 @@ const TicTacToe = () => {
     const [player, setPlayer] = useState();
     const [scoreBoard, setScoreBoard] = useState({ PlayerX: 0, PlayerO: 0 });
 
+    // const springs = useSpring({
+    //     from: { y: 1000 },
+    //     to: { y: 0 },
+    // })
+    const [springs, api] = useSpring(() => ({
+        from: { 
+            opacity: 0,
+        },
+        
+      }))
 
 
-    // -------------------- THIS PART SHOULD CHANGE -------------------- 
-    useEffect(() => {
-        if (winner === 'X') {
-            setScoreBoard(prevScore => ({
-                ...prevScore,
-                PlayerX: prevScore.PlayerX + 1
-            }));
-        } else if (winner === 'O') {
-            setScoreBoard(prevScore => ({
-                ...prevScore,
-                PlayerO: prevScore.PlayerO + 1
-            }));
-        }
-    }, [winner]);
-
-    // -------------------- THIS PART SHOULD CHANGE -------------------- 
-    useEffect(() => {
+    useMemo(() => {
         if (state.length === 0) {
-            return; // Exit early if state is empty
+            return;
         }
 
         const status = state.map(row => row.filter(item => !isNaN(item))).map(rowStatus => rowStatus.length < 1);
         status.every(item => item === true) && !winner && setWinner('no one, sorry :)');
     }, [state, winner]);
 
-    // -----------------------------------------------------------------
-
 
     const startGameHandler = () => {
-        StartGame({ setState, setPlayer, setWinner, setMarkClass });
+        ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass })
+        api.start({
+            from: {
+             opacity: 0,
+            },
+            to: {
+             opacity: 1,
+            },
+          })
     };
 
 
     const UpdateBoardHandler = (row, box) => {
         const rowIndex = state.indexOf(row);
         const boxIndex = row.indexOf(box);
-        UpdateGame({ rowIndex, boxIndex, state, setState, setPlayer, setWinner, setMarkClass, player });
+        UpdateGame({ rowIndex, boxIndex, state, setState, setPlayer, setWinner, setMarkClass, player, setScoreBoard });
     };
 
 
@@ -69,15 +71,15 @@ const TicTacToe = () => {
             )}
 
             {state.length > 0 && (
-                <>
+                <animated.div style={{...springs}}>
                     {winner && (
                         <div className="messageBox">
                             <h2>{`Winner is ${winner}`}</h2>
-                            <button onClick={() => ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass })}>RESET</button>
+                            <button onClick={startGameHandler}>RESET</button>
                         </div>
                     )}
 
-                    <div className="tictactoe_boxes">
+                    <div div className="tictactoe_boxes">
                         {markClass && <div className={`markLine ${markClass}`} />}
                         {state.map(row =>
                             row.map((box, index) => (
@@ -100,7 +102,7 @@ const TicTacToe = () => {
                             <p>{`Player X: ${scoreBoard.PlayerX} - Player O: ${scoreBoard.PlayerO}`}</p>
                         </div>
                     </div>
-                </>
+                </animated.div>
             )}
         </div>
     );

@@ -1,7 +1,15 @@
 
-const UpdateGame = ({rowIndex, boxIndex, setWinner, state, setState, setPlayer, player, setMarkClass}) => {
 
-    // console.log(rowIndex, boxIndex, player)
+const UpdateGame = ({
+    rowIndex, 
+    boxIndex, 
+    setWinner, 
+    state, 
+    setState, 
+    setPlayer, 
+    player, 
+    setMarkClass, 
+    setScoreBoard }) => {
 
     if(state[rowIndex][boxIndex] === "X" || state[rowIndex][boxIndex] === "Y") { 
         throw new Error('Clicked on a taken cell.')
@@ -32,6 +40,18 @@ const UpdateGame = ({rowIndex, boxIndex, setWinner, state, setState, setPlayer, 
                         setWinner(data.winner)
                         setMarkClass(data.winnerClass);
                         setPlayer(data.winner);
+
+                        if (data.winner === 'X') {
+                            setScoreBoard(prevScore => ({
+                                ...prevScore,
+                                PlayerX: prevScore.PlayerX + 1
+                            }));
+                        } else if (data.winner === 'O') {
+                            setScoreBoard(prevScore => ({
+                                ...prevScore,
+                                PlayerO: prevScore.PlayerO + 1
+                            }));
+                        }
                     }
                 })
                 .catch(error => {

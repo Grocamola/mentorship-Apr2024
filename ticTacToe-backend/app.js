@@ -44,12 +44,6 @@ function checkWinner(board) {
 
 
 
-app.get('/board', (req, res) => { 
-    res.json({ board, winner });
-})
-
-
-
 // POST endpoint to make a move
 app.post('/move', (req, res) => {
     const { x, y, player } = req.body;
@@ -58,10 +52,8 @@ app.post('/move', (req, res) => {
         return res.status(400).json({ error: 'Invalid move data' });
     }
 
-    // Update the board with the move
     board[x][y] = player;
 
-    // Check if there's a winner
     checkWinner(board);
 
     res.json({ board, winner, winnerClass });
