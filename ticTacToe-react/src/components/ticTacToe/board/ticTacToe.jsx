@@ -18,17 +18,6 @@ const TicTacToe = () => {
     const [player, setPlayer] = useState();
     const [scoreBoard, setScoreBoard] = useState({ PlayerX: 0, PlayerO: 0 });
 
-    // const springs = useSpring({
-    //     from: { y: 1000 },
-    //     to: { y: 0 },
-    // })
-    const [springs, api] = useSpring(() => ({
-        from: { 
-            opacity: 0,
-        },
-        
-      }))
-
 
     useMemo(() => {
         if (state.length === 0) {
@@ -42,23 +31,18 @@ const TicTacToe = () => {
 
     const startGameHandler = () => {
         ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass })
-        api.start({
-            from: {
-             opacity: 0,
-            },
-            to: {
-             opacity: 1,
-            },
-          })
     };
 
 
     const UpdateBoardHandler = (row, box) => {
+
+        if(winner !== '') { 
+            return
+        }
         const rowIndex = state.indexOf(row);
         const boxIndex = row.indexOf(box);
         UpdateGame({ rowIndex, boxIndex, state, setState, setPlayer, setWinner, setMarkClass, player, setScoreBoard });
     };
-
 
 
     return (
@@ -71,7 +55,7 @@ const TicTacToe = () => {
             )}
 
             {state.length > 0 && (
-                <animated.div style={{...springs}}>
+                <div>
                     {winner && (
                         <div className="messageBox">
                             <h2>{`Winner is ${winner}`}</h2>
@@ -102,7 +86,7 @@ const TicTacToe = () => {
                             <p>{`Player X: ${scoreBoard.PlayerX} - Player O: ${scoreBoard.PlayerO}`}</p>
                         </div>
                     </div>
-                </animated.div>
+                </div>
             )}
         </div>
     );
