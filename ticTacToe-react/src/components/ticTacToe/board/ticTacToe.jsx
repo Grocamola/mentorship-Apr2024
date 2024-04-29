@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import useMeasure from 'react-use-measure'
 import { useSpring, animated } from '@react-spring/web'
 
 
@@ -11,12 +12,17 @@ import './ticTacToe.css';
 
 
 
+
 const TicTacToe = () => {
     const [state, setState] = useState([]);
     const [winner, setWinner] = useState();
     const [markClass, setMarkClass] = useState();
     const [player, setPlayer] = useState();
     const [scoreBoard, setScoreBoard] = useState({ PlayerX: 0, PlayerO: 0 });
+
+    const [hover, toggle] = useState(false)
+    const [ref, { width }] = useMeasure()
+    const props = useSpring({ width: hover ? width : 0 })
 
 
     useMemo(() => {
@@ -30,7 +36,13 @@ const TicTacToe = () => {
 
 
     const startGameHandler = () => {
-        ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass })
+        toggle(true)
+        if(winner) { 
+            ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass })
+        } else { 
+           setTimeout(() => ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass }), 1000)  
+        }
+        
     };
 
 
@@ -50,7 +62,11 @@ const TicTacToe = () => {
             {state && state.length === 0 && (
                 <div>
                     <h4>START THE GAME</h4>
-                    <button onClick={startGameHandler}>Click to start</button>
+                    <button ref={ref} onClick={startGameHandler} className="main" >
+                            <animated.div className='fill' style={props} />
+                            <animated.div className='content'>{props.width.to(x => x.toFixed(0))}</animated.div>
+                            <p style={{margin: '0 auto', display: width >= 100 ? 'block' : 'none', zIndex: 100}}>START</p>
+                    </button>
                 </div>
             )}
 

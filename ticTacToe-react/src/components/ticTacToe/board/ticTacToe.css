@@ -93,3 +93,50 @@ button:active {
 .diagonal-right { 
     transform: rotate(45deg) translateX(-60px) translateY(-50px) scale(1.3)
 }
+
+
+
+
+
+
+.main {
+    position: relative;
+    width: 200px;
+    height: 40px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: 2px solid #272727;
+    overflow: hidden;
+    margin: auto;
+    padding: 0;
+  }
+  
+  .fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgb(174, 251, 65);
+  }
+  
+  .content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* color: #272727; */
+    color: transparent;
+    padding: 0;
+  }
+  
+  .container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    justify-content: center;
+  }

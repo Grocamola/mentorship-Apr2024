@@ -11,8 +11,9 @@ const UpdateGame = ({
     setMarkClass, 
     setScoreBoard }) => {
 
-    if(state[rowIndex][boxIndex] === "X" || state[rowIndex][boxIndex] === "Y") { 
-        throw new Error('Clicked on a taken cell.')
+    if(isNaN(state[rowIndex][boxIndex])) { 
+        console.log('this cell is already taken :) try another one')
+        return
     } else {
         try {
             fetch('http://localhost:5000/move/', {
