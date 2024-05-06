@@ -119,8 +119,7 @@ const TicTacToe = () => {
 
   return (
     <div className="main_container">
-      {state && state.length === 0 && (
-        <div>
+      {state && state.length === 0 && <div>
           <h4>Hey! Welcome to my tic-tac-toe :)</h4>
           <form onSubmit={startGameHandler} className="signInForm">
             <div>
@@ -130,9 +129,7 @@ const TicTacToe = () => {
                   {user}
                   <p className="clearUser" onClick={eraseUserHandler}>X</p>
                 </span>
-              ) : (
-                <input type="text" name="username" />
-              )}
+              ) : <input type="text" name="username" />}
             </div>
             <div>
               <label htmlFor="password">Password</label>
@@ -156,7 +153,7 @@ const TicTacToe = () => {
             </button>
           </form>
         </div>
-      )}
+      }
 
       {state.length > 0 && (
         <div>
@@ -174,22 +171,13 @@ const TicTacToe = () => {
                 <div
                   className="tictactoe_box"
                   key={index}
-                  onClick={() => UpdateBoardHandler(row, box)}
-                >
-                  {isNaN(box) && box}
-                </div>
+                  onClick={() => UpdateBoardHandler(row, box)}>{isNaN(box) && box}</div>
               ))
             )}
 
-            {!winner && (
-              <div className="playerName">
-                <p>{`Player ${player}'s turn`}</p>
-              </div>
-            )}
+            {!winner && <div className="playerName"><p>{`Player ${player}'s turn`}</p></div>}
 
-            <div className="scoreBoard">
-              <p>{`Player X: ${scoreBoard.PlayerX} - Player O: ${scoreBoard.PlayerO}`}</p>
-            </div>
+            <div className="scoreBoard"><p>{`Player X: ${scoreBoard.PlayerX} - Player O: ${scoreBoard.PlayerO}`}</p></div>
           </div>
         </div>
       )}
