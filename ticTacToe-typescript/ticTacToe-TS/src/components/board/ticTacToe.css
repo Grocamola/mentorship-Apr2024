@@ -185,3 +185,7 @@ button:active {
   .signInForm label { 
     line-height: 1.9rem;
   }
+
+  .errorClassInput { 
+    border: 2px solid red;
+  }

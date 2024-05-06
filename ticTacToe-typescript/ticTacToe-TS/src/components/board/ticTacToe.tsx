@@ -16,6 +16,7 @@ interface signInForm {
 
 const TicTacToe = () => {
   const [user, setUser] = useState<string>('')
+  const [signinErrorClass, setSigninErrorClass] = useState(false)
   const [state, setState] = useState<TicTacToeBoard>([]);
   const [winner, setWinner] = useState<string>("");
   const [markClass, setMarkClass] = useState<string>();
@@ -46,7 +47,7 @@ const TicTacToe = () => {
     if (storedUser) {
         setUser(storedUser);
     } 
-  },[user])
+  },[])
 
 
   //Starting the game, checking user credentials and entering the game
@@ -70,8 +71,10 @@ const TicTacToe = () => {
         password: credentials.password,
       });
       if (approvedUser) {
-        // setUser(approvedUser);
+        setSigninErrorClass(false)
         ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass });
+      } else { 
+        setSigninErrorClass(true)
       }
     }
   };
@@ -133,7 +136,7 @@ const TicTacToe = () => {
             </div>
             <div>
               <label htmlFor="password">Password</label>
-              <input type="password" name="password" required />
+              <input style={{border: signinErrorClass ? '2px solid red' : '1px solid rgb(204, 204, 204)'}} type="password" name="password" required />
             </div>
             <br />
             <button ref={ref} type="submit" className="main">
