@@ -1,4 +1,4 @@
 import PocketBase from 'pocketbase';
 
-const url = 'http://127.0.0.1:8090'
+const url = 'https://jenna-tictactoe.pockethost.io/'
 export const client = new PocketBase(url)
