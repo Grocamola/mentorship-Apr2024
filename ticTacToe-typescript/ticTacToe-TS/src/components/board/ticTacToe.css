@@ -144,9 +144,8 @@ button:active {
 
   /* ------ FORM ------ */
   .signInForm { 
-    width: 250px;
+    width: 300px;
     margin: 30px auto 0;
-
   }
   .signInForm div { 
     display: flex;
@@ -155,7 +154,6 @@ button:active {
   }
   .signInForm div span { 
     width: 160px;
-    
   }
   .clearUser { 
     display:inline;

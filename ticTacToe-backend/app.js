@@ -37,7 +37,6 @@ function checkWinner(board) {
       winner = board[0][2]
       winnerClass = 'diagonal-right';
     } 
-
     
     return
 }
@@ -59,6 +58,57 @@ app.post('/move', (req, res) => {
     res.json({ board, winner, winnerClass });
 });
 
+// Syatem plays
+app.post('/system-move', (req, res) => {
+    const { player } = req.body;
+
+    let criticalBox = []
+
+    //System checks if there are any boxes to win with one move
+    for (let firstInRow = 0; firstInRow < board.length; firstInRow++) {
+        let rowValues = [board[firstInRow][0], board[firstInRow][1], board[firstInRow][2]];
+        if(rowValues.filter(item => item === player).length === 2 && rowValues.filter(item => typeof(item) === 'number')){
+            if(typeof(board[firstInRow][0]) === 'number') {criticalBox = [firstInRow, 0]}
+            else if(typeof(board[firstInRow][1]) === 'number') {criticalBox = [firstInRow, 1]}
+            else if(typeof(board[firstInRow][2]) === 'number') {criticalBox = [firstInRow, 2]}
+        }
+    }
+    for (let firstInRCol = 0; firstInRCol < board.length; firstInRCol++) {
+        let rowValues = [board[0][firstInRCol], board[1][firstInRCol], board[2][firstInRCol]];
+        if(rowValues.filter(item => item === player).length === 2 && rowValues.filter(item => typeof(item) === 'number')){
+            if(typeof(board[0][firstInRCol]) === 'number') {criticalBox = [0, firstInRCol]}
+            else if(typeof(board[1][firstInRCol]) === 'number') {criticalBox = [1, firstInRCol]}
+            else if(typeof(board[2][firstInRCol]) === 'number') {criticalBox = [2, firstInRCol]}
+        }
+    }
+
+    // I should add something to check diagonal here, low priority, maybe later.
+
+    // If system can't win in one move, it plays randomly in free boxes
+    if(board[0][0] === player && board[0][1] === player && board[0][2] !== player && board[0][2] !== "X") {
+        criticalBox = [0, 2]
+    } else{
+        while (criticalBox.length < 1) { 
+            let randomRow =  Math.floor(Math.random() * 3);
+            let randomCol =  Math.floor(Math.random() * 3);
+            if(board[randomRow][randomCol] !== "X" && board[randomRow][randomCol] !== "O" && !isNaN(board[randomRow][randomCol])){
+                criticalBox = [randomRow, randomCol]
+            } 
+        }
+    }
+
+    //Sending back result
+    if(criticalBox.length > 0) {
+        board[criticalBox[0]][criticalBox[1]] = "O"
+
+        checkWinner(board);
+        res.json({ board, winner, winnerClass });
+        criticalBox = []
+    };
+
+    return
+})
+
 
 
 // DELETE endpoint to clear and reset the board
@@ -67,6 +117,8 @@ app.delete('/reset', (req, res) => {
     winner = '';
     winnerClass = '';
     res.send({board, winner, winnerClass});
+
+    return
 });
 
 

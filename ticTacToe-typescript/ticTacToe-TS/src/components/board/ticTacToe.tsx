@@ -1,12 +1,13 @@
 import { useMemo, useState, FormEvent } from "react";
 import useAuth from "../hooks/useAuth";
-import useMeasure from "react-use-measure";
-import { useSpring, animated } from "@react-spring/web";
 
+import SignInForm from "../utils/signInForm/signInForm";
 import ResetGame from "../utils/resetGame";
 import UpdateGame from "../utils/updateGame";
+// import SystemMove from "../utils/systemMove";
 
 import "./ticTacToe.css";
+
 
 export type TicTacToeBoard = number[][];
 interface signInForm {
@@ -19,13 +20,12 @@ const TicTacToe = () => {
   const [signinErrorClass, setSigninErrorClass] = useState(false)
   const [state, setState] = useState<TicTacToeBoard>([]);
   const [winner, setWinner] = useState<string>("");
-  const [markClass, setMarkClass] = useState<string>();
+  const [markClass, setMarkClass] = useState<string>('');
   const [player, setPlayer] = useState<"X" | "O">("X");
-  const [scoreBoard, setScoreBoard] = useState({ PlayerX: 0, PlayerO: 0 });
+  const [scoreBoard, setScoreBoard] = useState<{ PlayerX: number; PlayerO: number; }>({ PlayerX: 0, PlayerO: 0 });
 
   const [hover, toggle] = useState(false);
-  const [ref, { width }] = useMeasure();
-  const props = useSpring({ width: hover ? width : 0 });
+
 
   useMemo(() => {
     if (state.length === 0) {
@@ -53,6 +53,7 @@ const TicTacToe = () => {
   //Starting the game, checking user credentials and entering the game
   const startGameHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    toggle(true);
 
     const credentials: signInForm = {
       username: user
@@ -72,7 +73,7 @@ const TicTacToe = () => {
       });
       if (approvedUser) {
         setSigninErrorClass(false)
-        ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass });
+        ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass, player, scoreBoard, setScoreBoard, markClass });
       } else { 
         setSigninErrorClass(true)
       }
@@ -88,15 +89,20 @@ const TicTacToe = () => {
   //only resetting the board
   const resetGameHandler = () => {
     toggle(true);
+    
     if (winner) {
-      ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass });
+        ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass, player, scoreBoard, setScoreBoard, markClass });
     } else {
       setTimeout(
         () =>
-          ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass }),
+          ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass, player, scoreBoard, setScoreBoard, markClass }),
         1000
       );
     }
+    
+    // if (player === "O") {
+    //   SystemMove({player, setState, setPlayer, setMarkClass, setWinner, scoreBoard, setScoreBoard})
+    // }
   };
 
   //updating board with each movement
@@ -122,42 +128,17 @@ const TicTacToe = () => {
 
   return (
     <div className="main_container">
-      {state && state.length === 0 && <div>
-          <h4>Hey! Welcome to my tic-tac-toe :)</h4>
-          <form onSubmit={startGameHandler} className="signInForm">
-            <div>
-              <label htmlFor="username">Username</label>
-              {user.length > 3 ? (
-                <span style={{ display: "inline-block" }}>
-                  {user}
-                  <p className="clearUser" onClick={eraseUserHandler}>X</p>
-                </span>
-              ) : <input type="text" name="username" />}
-            </div>
-            <div>
-              <label htmlFor="password">Password</label>
-              <input style={{border: signinErrorClass ? '2px solid red' : '1px solid rgb(204, 204, 204)'}} type="password" name="password" required />
-            </div>
-            <br />
-            <button ref={ref} type="submit" className="main">
-              <animated.div className="fill" style={props} />
-              <animated.div className="content">
-                {props.width.to((x) => x.toFixed(0))}
-              </animated.div>
-              <p
-                style={{
-                  margin: "0 auto",
-                  display: width >= 100 ? "block" : "none",
-                  zIndex: 100,
-                }}
-              >
-                ENTER THE GAME
-              </p>
-            </button>
-          </form>
-        </div>
-      }
 
+      {/* Sign-in form */}
+      {state && state.length === 0 && <SignInForm 
+        user={user} 
+        startGameHandler={startGameHandler} 
+        eraseUserHandler={eraseUserHandler} 
+        signinErrorClass={signinErrorClass} 
+        hover={hover} />}
+
+
+      {/* Game Board */}
       {state.length > 0 && (
         <div>
           {winner && (
