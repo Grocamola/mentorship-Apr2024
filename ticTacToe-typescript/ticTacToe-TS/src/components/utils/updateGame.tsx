@@ -30,7 +30,7 @@ const UpdateGame = ({
         return
     } else {
         try {
-            fetch('http://localhost:5000/move/', {
+            fetch('http://localhost:4000/move/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

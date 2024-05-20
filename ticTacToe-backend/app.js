@@ -5,7 +5,11 @@ const cors = require('cors');
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000', // Allow requests from this origin
+    methods: 'GET,POST,PUT,DELETE', // Specify allowed HTTP methods
+    credentials: true // If you need to allow cookies to be sent with the requests
+  }));
 
 let board = [[11,12,13],[21,22,23],[31,32,33]];
 let winner = '';

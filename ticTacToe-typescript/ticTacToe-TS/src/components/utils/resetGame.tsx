@@ -16,7 +16,7 @@ type ResetGameProps = {
 
 const ResetGame = (props: ResetGameProps) => { 
     try {
-        fetch('http://localhost:5000/reset', { 
+        fetch('http://localhost:4000/reset', { 
             method: 'DELETE', 
             headers: {
                 'Content-Type': 'application/json'
