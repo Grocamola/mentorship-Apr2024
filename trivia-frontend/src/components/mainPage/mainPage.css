@@ -1,0 +1,121 @@
+
+
+.modalBackground { 
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    z-index: 100;
+    background-color: hsla(0, 0%, 17%, 0.7);
+}
+.modalForm {
+    position: absolute;
+    width: 500px;
+    height: fit-content;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%) translateX(-50%);
+    z-index: 200;
+    background-color: white;
+    border-radius: 20px;
+}
+
+
+.startPlayContainer { 
+    width: 700px;
+    height: 700px;
+    display: flex;
+    flex-direction: column;
+}
+.playerPick { 
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.playerList { 
+    max-height: 200px;
+    overflow-y: scroll;
+    border: 2px solid #eee;
+    padding: 5px;
+    border-radius: 10px;
+}
+.playerList ul { 
+    margin: 0;
+    padding: 0;
+}
+.playerList ul li { 
+    list-style: none;
+    width: 250px;
+    height: 40px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 2px;
+    padding: 0 5px;
+}
+.playerList ul li p { 
+    line-height: 40px;
+    margin: 0;
+    padding: 0;
+}
+.systemPlay { 
+    padding: 20px 10px;
+    box-sizing: border-box;
+}
+
+.gameOption { 
+    width: 100px;
+    height: 100px;
+    padding: 12px;
+    box-sizing: border-box;
+    border: 2px solid rgb(233, 2, 2);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: auto;
+    cursor: pointer;
+}
+.gameOption:hover { 
+    transform: scale(1.02)
+}
+.gameOption img { 
+    width: 70px;
+    height: 70px;
+}
+
+.startTheGame { 
+    margin-top: 30px;
+}
+
+
+.textButton { 
+    background-color: none;
+}
+
+.modalForm form { 
+    margin: 50px;
+    box-sizing: border-box;
+}
+.modalForm button { 
+    width: 10rem;
+    height: 2rem;
+    margin: 30px auto 20px;
+}
+.formRow { 
+    margin: 10px;
+    width: 350px;
+    margin: 10px auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    line-height: 2rem;
+}
+.formRow input {
+    height: 1.5rem;
+    width: 12rem;
+    padding: 2px 10px;
+}
