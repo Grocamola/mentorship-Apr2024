@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useState } from 'react'
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useSpring, animated } from "@react-spring/web";
 import useMeasure from "react-use-measure";
@@ -10,6 +10,7 @@ import { useUserContext } from '../trivia-utils/hooks/context';
 
 import './mainPage.css'
 import '../../components/trivia-utils/ui/styles/main-styles.css';
+import getOnlineUsers from '../trivia-utils/requests/requests/get-online-users';
 
 
 
@@ -50,7 +51,7 @@ const MainPage = ({setUser}: mainPageProps) => {
 
 
     //Should get users from pocketbase here
-    const players = ['Sophie', 'Mike', 'Jenna']
+    const [players, setPlayers] = useState<string[]>(['Sophie', 'Mike', 'Jenna'])
 
 
     const pickPlayerHandler = (e: string) => {
@@ -89,6 +90,9 @@ const MainPage = ({setUser}: mainPageProps) => {
                 toggle(true);
                 console.log('approved user')
                 setTimeout(() => {setUser(approvedUser)},300)
+
+                let allPlayers = getOnlineUsers()
+                setPlayers((await allPlayers).map(item => item.name))
             } else { 
                 console.log('youre not a user !!!')
             }
@@ -211,3 +215,4 @@ const MainPage = ({setUser}: mainPageProps) => {
 }
  
 export default MainPage;
+
