@@ -12,7 +12,7 @@ type SystemMove = {
 const SystemMove = ({player, setState, setPlayer, setMarkClass, setWinner, scoreBoard, setScoreBoard}: SystemMove) => { 
 
     try {
-        fetch('http://localhost:4000/system-move/', { 
+        fetch('http://localhost:4000/tic-tac-toe/system-move/', { 
             method: 'POST', 
             headers: {
                 'Content-Type': 'application/json',

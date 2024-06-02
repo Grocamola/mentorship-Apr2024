@@ -1,13 +1,28 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 
-export const userContext = createContext<string>('')
+type ContextProps = {
+    user: string;
+    setUser: (user: string) => void;
+};
 
-export function useUserContext() { 
-    const user = useContext(userContext)
+export const UserContext = createContext<ContextProps | undefined>(undefined);
 
-    if(user === undefined) { 
-        console.log('there is no user signed in.')
+export const UserProvider = ({ children }: { children: ReactNode }) => {
+    const [user, setUser] = useState<string>("");
+
+    return (
+        <UserContext.Provider value={{ user, setUser }}>
+            {children}
+        </UserContext.Provider>
+    );
+};
+
+export function useUserContext() {
+    const context = useContext(UserContext);
+
+    if (context === undefined) {
+        throw new Error("useUserContext must be used within a UserProvider");
     }
 
-    return user;
+    return context;
 }

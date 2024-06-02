@@ -15,8 +15,9 @@ type ResetGameProps = {
 
 
 const ResetGame = (props: ResetGameProps) => { 
+    
     try {
-        fetch('http://localhost:4000/reset', { 
+        fetch('http://localhost:4000/tic-tac-toe/reset', { 
             method: 'DELETE', 
             headers: {
                 'Content-Type': 'application/json'

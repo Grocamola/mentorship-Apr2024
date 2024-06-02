@@ -30,7 +30,7 @@ const UpdateGame = ({
         return
     } else {
         try {
-            fetch('http://localhost:4000/move/', {
+            fetch('http://localhost:4000/tic-tac-toe/move/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

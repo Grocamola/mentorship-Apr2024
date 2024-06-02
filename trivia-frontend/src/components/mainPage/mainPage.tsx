@@ -1,4 +1,4 @@
-import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { FormEvent, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useSpring, animated } from "@react-spring/web";
 import useMeasure from "react-use-measure";
@@ -30,10 +30,10 @@ export type mainPageProps = {
 }
 
 
-const MainPage = ({setUser}: mainPageProps) => {
+const MainPage = () => {
 
     const navigate = useNavigate()
-    const user = useUserContext()
+    const { user, setUser } = useUserContext();
 
     //animation configs
     const [hover, toggle] = useState(false);
@@ -89,7 +89,7 @@ const MainPage = ({setUser}: mainPageProps) => {
             if (approvedUser) {
                 toggle(true);
                 console.log('approved user')
-                setTimeout(() => {setUser(approvedUser)},300)
+                setTimeout(() => {setUser(approvedUser)},200)
 
                 let allPlayers = getOnlineUsers()
                 setPlayers((await allPlayers).map(item => item.name))
@@ -98,10 +98,11 @@ const MainPage = ({setUser}: mainPageProps) => {
             }
           }
     }
+    useMemo(() => {toggle(false)}, [user])
 
     const signupFormHandler = async(e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-
+        toggle(false)
         const credentials: signUpForm = {
             name: (e.currentTarget.elements.namedItem("name") as HTMLInputElement).value,
             email: user ? user : (e.currentTarget.elements.namedItem("email") as HTMLInputElement).value,
@@ -126,6 +127,7 @@ const MainPage = ({setUser}: mainPageProps) => {
                 console.log('check your info again. something is wrong here :|')
             }
           }
+        
     }
 
     const startTheGameHandler = () => {
@@ -138,7 +140,7 @@ const MainPage = ({setUser}: mainPageProps) => {
 
     return ( 
         <>
-            <Navbar setUser={setUser} toggle={toggle} />
+            <Navbar />
             {!user && <div className="signinModal">
                 <div className="modalBackground" />
                 <div className="modalForm">

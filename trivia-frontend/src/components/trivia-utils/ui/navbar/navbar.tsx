@@ -1,15 +1,15 @@
-import { mainPageProps } from '../../../mainPage/mainPage';
+import { useNavigate } from 'react-router-dom';
+import { useUserContext } from '../../hooks/context';
 import './navbar.css'
 
-type navbarExtraProps = { 
-    toggle: (value: boolean) => void
-}
-type NavbarProps = mainPageProps & navbarExtraProps
 
-const Navbar = ({setUser, toggle}: NavbarProps) => {
+const Navbar = () => {
 
+    const { setUser } = useUserContext();
+
+    const navigate = useNavigate()
+    
     const signoutHandler = () => {
-        toggle(false)
         setUser('')
         if (localStorage.getItem('email')) {
             localStorage.removeItem('email');
@@ -24,6 +24,8 @@ const Navbar = ({setUser, toggle}: NavbarProps) => {
             localStorage.removeItem('name');
             console.log(`Removed name from local storage.`);
         }
+
+        navigate('/', {replace: true})
     }
 
     return ( 
