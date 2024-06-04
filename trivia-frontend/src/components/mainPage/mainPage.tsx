@@ -186,7 +186,7 @@ const MainPage = () => {
                     </div>
                 </div>
                 <br />
-                <h2>You you want to play with ?</h2>
+                <h2>Who do you want to play with ?</h2>
                 <div className="playerPick">
                     <div className="playerList">
                         <ul>
