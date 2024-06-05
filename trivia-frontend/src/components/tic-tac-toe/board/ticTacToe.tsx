@@ -6,6 +6,7 @@ import UpdateGame from "../utils/updateGame";
 
 import "./ticTacToe.css";
 import Navbar from "../../trivia-utils/ui/navbar/navbar";
+import { useParams } from "react-router-dom";
 
 
 export type TicTacToeBoard = number[][];
@@ -15,6 +16,8 @@ interface ChatMessage {
 }
 
 const TicTacToe = () => {
+
+  const {roomId} = useParams()
 
   const [state, setState] = useState<TicTacToeBoard>([]);
   const [winner, setWinner] = useState<string>("");
@@ -28,7 +31,7 @@ const TicTacToe = () => {
 
 
   useEffect(() => { 
-    ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass, player, scoreBoard, setScoreBoard, markClass });
+    ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass, player, scoreBoard, setScoreBoard, markClass, roomId });
 
      // Listen for incoming chat messages
      socket.on("chatMessage", (data: ChatMessage) => {
@@ -67,11 +70,11 @@ const TicTacToe = () => {
     // toggle(true);
     
     if (winner) {
-        ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass, player, scoreBoard, setScoreBoard, markClass });
+        ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass, player, scoreBoard, setScoreBoard, markClass, roomId });
     } else {
       setTimeout(
         () =>
-          ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass, player, scoreBoard, setScoreBoard, markClass }),
+          ResetGame({ setState, setPlayer, winner, setWinner, setMarkClass, player, scoreBoard, setScoreBoard, markClass, roomId }),
         1000
       );
     }
@@ -132,6 +135,7 @@ const TicTacToe = () => {
                                 type="text"
                                 value={message}
                                 onChange={(e) => setMessage(e.target.value)}
+                                placeholder="type here..."
                               />
                             </div>
                             <div className="ttt_messageSendbtn">

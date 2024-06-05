@@ -30,7 +30,7 @@ const Navbar = () => {
 
     return ( 
         <div className='navbar'>
-            <p>Groca-game!</p>
+            <button style={{border: 'none', background: 'none', color: 'black'}} onClick={() => navigate('/', {replace: true})}><p>Groca-trivia!</p></button>
             <button onClick={signoutHandler}>Sign Out</button>
         </div>
      );

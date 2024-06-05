@@ -50,19 +50,18 @@ const MainPage = () => {
     // const confirmed = window.confirm('Do you want to invite this user to play a game?');
     // if (confirmed) {
       socket.emit('invite', e, socket.id); // Pass sender's socket ID as well
-      navigate('/tic-tac-toe');
     // }
   };
 
   // Check if user is saved locally before starting the game
-  useEffect(() => {
+  useMemo(() => {
     const storedUser = localStorage.getItem("email");
     if (storedUser) {
       setUser(storedUser);
     }
   }, [setUser]);
 
-  useEffect(() => {
+  useMemo(() => {
     socket.on('activeUsers', (users) => setPlayers([...users]));
     return () => {
       socket.off('activeUsers');
@@ -76,7 +75,7 @@ const MainPage = () => {
     //   if (confirmed) {
         // Emit event to accept the invitation
         socket.emit('acceptInvitation', { roomId });
-        navigate(`/tic-tac-toe`);
+        navigate(`/tic-tac-toe/${roomId}`);
     //   }
     });
 
@@ -147,7 +146,7 @@ const MainPage = () => {
 
   const startTheGameHandler = () => {
     if (game === 'ttt') {
-      navigate('/tic-tac-toe', { replace: true });
+      navigate(`/tic-tac-toe`, { replace: true });
     }
   };
 

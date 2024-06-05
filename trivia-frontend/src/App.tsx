@@ -15,6 +15,7 @@ function App() {
         <Routes>
           <Route path="/" element={<MainPage />} />
           <Route path="tic-tac-toe" element={<TicTacToe />} />
+          <Route path="tic-tac-toe/:roomId" element={<TicTacToe />} />
         </Routes>
         </UserProvider>,
     </>

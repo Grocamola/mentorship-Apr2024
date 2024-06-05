@@ -41,6 +41,7 @@ io.on('connection', (socket) => {
     socket.join(roomId);
     console.log(`User ${senderId} invited ${recipientId} to room ${roomId}`);
     io.to(recipientId).emit('invitation', { roomId });
+    io.to(senderId).emit('invitation', { roomId });
   });
 
   socket.on('acceptInvitation', ({ roomId }) => {
@@ -76,6 +77,19 @@ io.on('connection', (socket) => {
     console.log(`Message received from ${userId}: ${message}`);
     io.emit('chatMessage', { userId, message });
   });
+
+  io.on('connection', (socket) => {
+    socket.on('userReset', ({ roomId }, callback) => {
+        // Reset board logic
+        board = [[11, 12, 13], [21, 22, 23], [31, 32, 33]];
+        winner = '';
+        winnerClass = '';
+
+        const data = { board, winner, winnerClass };
+        io.to(roomId).emit('resetBoard', data);
+        callback({ success: true, data });
+    });
+});
 });
 
 app.use(bodyParser.json());
