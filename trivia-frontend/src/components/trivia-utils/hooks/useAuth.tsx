@@ -45,6 +45,7 @@ const useAuth = async(props: signinProps | signupProps): Promise<string> => {
             if(record && record.code === 200) { 
                 approvedUser = props.email;
                 localStorage.setItem('email', props.email)
+
             }
             console.log(record)
         } catch (err) { 

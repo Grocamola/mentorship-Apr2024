@@ -4,8 +4,7 @@ const { Server } = require('socket.io');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-const triviaRoutes = require('./routes/trivia-routes');
-const tictactoeRoutes = require('./routes/tictactoe-routes');
+const { generateRoomId, checkWinner } = require('./functions/tictactoe-utilities');
 
 const app = express();
 const server = http.createServer(app);
@@ -17,16 +16,18 @@ const io = new Server(server, {
 });
 
 app.use(express.static('public'));
+app.use(bodyParser.json());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  methods: 'GET,POST,PUT,DELETE',
+  credentials: true
+}));
 
 const activeUsers = {};
-
-function generateRoomId() {
-  return Math.random().toString(36).substring(7);
-}
+let gameRooms = {};
 
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
-
   activeUsers[socket.id] = true;
   io.emit('activeUsers', Object.keys(activeUsers));
 
@@ -39,7 +40,7 @@ io.on('connection', (socket) => {
   socket.on('invite', (recipientId, senderId) => {
     const roomId = generateRoomId();
     socket.join(roomId);
-    console.log(`User ${senderId} invited ${recipientId} to room ${roomId}`);
+    gameRooms[roomId] = { board: [[11, 12, 13], [21, 22, 23], [31, 32, 33]], winner: '', winnerClass: '' };
     io.to(recipientId).emit('invitation', { roomId });
     io.to(senderId).emit('invitation', { roomId });
   });
@@ -50,58 +51,34 @@ io.on('connection', (socket) => {
     io.to(roomId).emit('invitationAccepted');
   });
 
-  socket.on('joinRoom', (room) => {
-    socket.join(room);
-    console.log(`User ${socket.id} joined room ${room}`);
-    const clients = Array.from(io.sockets.adapter.rooms.get(room) || []);
-    io.to(room).emit('roomMembers', clients);
+  socket.on('userReset', ({ roomId }, callback) => {
+    gameRooms[roomId] = { board: [[11, 12, 13], [21, 22, 23], [31, 32, 33]], winner: '', winnerClass: '' };
+    const data = gameRooms[roomId];
+    io.to(roomId).emit('resetBoard', data);
+    callback({ success: true, data });
   });
 
-  socket.on('leaveRoom', (room) => {
-    socket.leave(room);
-    console.log(`User ${socket.id} left room ${room}`);
-    const clients = Array.from(io.sockets.adapter.rooms.get(room) || []);
-    io.to(room).emit('roomMembers', clients);
-  });
+  socket.on('userMove', ({ roomId, rowIndex, boxIndex, player }, callback) => {
+    const game = gameRooms[roomId];
+    if (!game || game.winner) {
+      return callback({ success: false, error: 'Invalid move or game already won' });
+    }
+    if(isNaN(game.board[rowIndex][boxIndex])) { 
+      return callback({ success: false, error: 'Please choose another box, this one is taken.' });
+    }
+    game.board[rowIndex][boxIndex] = player;
+    checkWinner(game.board);
 
-  socket.on('privateMessage', (data) => {
-    const { recipientId, message } = data;
-    io.to(recipientId).emit('privateMessage', {
-      senderId: socket.id,
-      message: message
-    });
+    const data = game;
+    io.to(roomId).emit('updateUserBoard', data);
+    callback({ success: true, data });
   });
 
   socket.on('chatMessage', (data) => {
-    const { userId, message } = data;
-    console.log(`Message received from ${userId}: ${message}`);
-    io.emit('chatMessage', { userId, message });
+    const { roomId, userId, message } = data;
+    io.to(roomId).emit('chatMessage', { userId, message });
   });
-
-  io.on('connection', (socket) => {
-    socket.on('userReset', ({ roomId }, callback) => {
-        // Reset board logic
-        board = [[11, 12, 13], [21, 22, 23], [31, 32, 33]];
-        winner = '';
-        winnerClass = '';
-
-        const data = { board, winner, winnerClass };
-        io.to(roomId).emit('resetBoard', data);
-        callback({ success: true, data });
-    });
 });
-});
-
-app.use(bodyParser.json());
-
-app.use(cors({
-  origin: 'http://localhost:3000',
-  methods: 'GET,POST,PUT,DELETE',
-  credentials: true
-}));
-
-app.use('/auth', triviaRoutes);
-app.use('/tic-tac-toe', tictactoeRoutes);
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {

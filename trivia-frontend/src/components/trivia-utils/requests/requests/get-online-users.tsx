@@ -6,7 +6,7 @@ const getOnlineUsers = async () => {
         const response = await pb.collection('users').getFullList({
             sort: '-created',
         });
-        console.log(response);
+        // console.log(response);
         return response;
     } catch (err) {
         console.error(err);
