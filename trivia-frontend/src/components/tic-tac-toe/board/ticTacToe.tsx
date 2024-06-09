@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../../trivia-utils/ui/navbar/navbar";
 import socket from "../../trivia-utils/requests/socket";
@@ -26,7 +26,7 @@ const TicTacToe = () => {
       setMessages((prevMessages) => [...prevMessages, data]);
     });
 
-    socket.on('updateUserBoard', (data: SocketUpdateResponseType) => updateBoard(data));
+    
     socket.on('resetBoard', (data: ResetResponseType) => resetBoard(data));
 
     // Cleanup on component unmount
@@ -37,6 +37,10 @@ const TicTacToe = () => {
       socket.off('resetBoard');
     };
   }, [roomId]);
+
+  useEffect(() => { 
+    socket.on('updateUserBoard', (data: SocketUpdateResponseType) => updateBoard(data));
+  },[])
 
   const updateBoard = (data: SocketUpdateResponseType) => { 
     if(data.winner === '') { 

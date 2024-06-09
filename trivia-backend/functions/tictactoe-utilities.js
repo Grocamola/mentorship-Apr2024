@@ -29,7 +29,7 @@ const checkWinner = (board) => {
       winnerClass = 'diagonal-right';
     } 
     
-    return
+    return { winner, winnerClass }
 }
 
 
