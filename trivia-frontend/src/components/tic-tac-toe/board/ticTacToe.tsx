@@ -74,9 +74,9 @@ const TicTacToe = () => {
   };
 
   const UpdateBoardHandler = (row: number[], box: number) => {
-    if (winner !== "") {
-      return;
-    }
+    // if (winner !== "") {
+    //   return;
+    // }
     console.log("player: ",player, "socket id: ",socket.id)
     if (player === socket.id) { 
       const rowIndex = state.indexOf(row);

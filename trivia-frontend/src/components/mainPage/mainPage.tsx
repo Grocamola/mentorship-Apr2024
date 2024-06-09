@@ -58,11 +58,11 @@ const MainPage = () => {
     };
   }, [navigate]);
 
-  const startTheGameHandler = () => {
-    if (game === 'ttt') {
-      navigate(`/tic-tac-toe`, { replace: true });
-    }
-  };
+  // const startTheGameHandler = () => {
+  //   if (game === 'ttt') {
+  //     navigate(`/tic-tac-toe`, { replace: true });
+  //   }
+  // };
 
 
 
@@ -83,22 +83,21 @@ const MainPage = () => {
           <div className="playerList">
             <ul>
               {players.map((player, index) => player !== socket.id && <li key={player}>
-                {/* <p>Player {index + 1}</p> */}
-                <p>{player}</p>
+                <p>Player {index + 1}</p>
                 <button onClick={() => pickPlayerHandler(player)}>
                   INVITE
                 </button>
               </li>)}
             </ul>
           </div>
-          <div className="systemPlay">
+          {/* <div className="systemPlay">
             <div>
               <input type="checkbox" /><span>Play With Computer</span>
               <div className="startTheGame">
                 <button onClick={startTheGameHandler}>{'Start The Game'}</button>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
         <br />
       </div>
