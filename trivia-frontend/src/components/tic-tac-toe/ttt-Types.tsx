@@ -15,12 +15,19 @@ export interface SocketResponseType {
   
 export interface ResetResponseType {
     board: TicTacToeBoard;
-    winner: "X" | "O" | '';
+    winner: string;
     winnerClass: string;
+    nextPlayer: string;
 }
   
 export interface SocketUpdateResponseType { 
     board: TicTacToeBoard;
-    winner: "X" | "O" | '';
+    winner: string;
     winnerClass: string;
+    nextPlayer: string;
+}
+
+export interface PlayersType {
+    playerName: string;
+    playerCode: string;
 }

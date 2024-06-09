@@ -39,6 +39,7 @@ const MainPage = () => {
   // Getting users list
   useMemo(() => {
     socket.on('activeUsers', (users) => setPlayers([...users]));
+    console.log(players)
     return () => {
       socket.off('activeUsers');
     };
@@ -82,7 +83,8 @@ const MainPage = () => {
           <div className="playerList">
             <ul>
               {players.map((player, index) => player !== socket.id && <li key={player}>
-                <p>Player {index + 1}</p>
+                {/* <p>Player {index + 1}</p> */}
+                <p>{player}</p>
                 <button onClick={() => pickPlayerHandler(player)}>
                   INVITE
                 </button>

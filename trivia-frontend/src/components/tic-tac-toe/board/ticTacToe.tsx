@@ -1,33 +1,49 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../../trivia-utils/ui/navbar/navbar";
 import socket from "../../trivia-utils/requests/socket";
 import "./ticTacToe.css";
-
-import { ChatMessage, SocketResponseType, ResetResponseType, SocketUpdateResponseType, TicTacToeBoard } from '../ttt-Types';
-
+import { ChatMessage, SocketResponseType, ResetResponseType, SocketUpdateResponseType, TicTacToeBoard, PlayersType } from '../ttt-Types';
 
 const TicTacToe = () => {
+
   const { roomId } = useParams();
+
   const [state, setState] = useState<TicTacToeBoard>([]);
   const [winner, setWinner] = useState<string>("");
   const [markClass, setMarkClass] = useState<string>('');
-  const [player, setPlayer] = useState<"X" | "O">("X");
+
+  const [player, setPlayer] = useState<string>('');
+  const [players, setPlayers] = useState<PlayersType[]>([{ playerName: 'X', playerCode: '' }, { playerName: 'O', playerCode: '' }]);
+
   const [scoreBoard, setScoreBoard] = useState<{ PlayerX: number; PlayerO: number; }>({ PlayerX: 0, PlayerO: 0 });
+
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [message, setMessage] = useState<string>("");
-  const [userId] = useState<string>(socket.id!);  
 
-  useMemo(() => { 
+  const [userId] = useState<string>(socket.id!);
+
+  const playerX = players.filter(player => player.playerName === "X")[0]?.playerCode;
+  const playerO = players.filter(player => player.playerName === "O")[0]?.playerCode;
+
+  useEffect(() => {
     socket.emit('joinRoom', roomId);
-
+    console.log(socket.id)
     // Listen for incoming chat messages
     socket.on("chatMessage", (data: ChatMessage) => {
       setMessages((prevMessages) => [...prevMessages, data]);
     });
 
-    
     socket.on('resetBoard', (data: ResetResponseType) => resetBoard(data));
+
+    // Listen for updated player information
+    socket.on('usersInfo', (playersData: PlayersType[]) => {
+      setPlayers(playersData);
+      console.log(playersData);
+    });
+
+    // Listen for board updates
+    socket.on('updateUserBoard', (data: SocketUpdateResponseType) => updateBoard(data));
 
     // Cleanup on component unmount
     return () => {
@@ -35,29 +51,25 @@ const TicTacToe = () => {
       socket.off("chatMessage");
       socket.off('updateUserBoard');
       socket.off('resetBoard');
+      socket.off('usersInfo');
     };
   }, [roomId]);
 
-  useEffect(() => { 
-    socket.on('updateUserBoard', (data: SocketUpdateResponseType) => updateBoard(data));
-  },[])
-
-  const updateBoard = (data: SocketUpdateResponseType) => { 
-    if(data.winner === '') { 
-      setState(data.board); 
-      const nextPlayer = player === "X" ? "O" : "X";
-      setPlayer(nextPlayer);
-    } else { 
-      setState(data.board); 
+  const updateBoard = (data: SocketUpdateResponseType) => {
+    if (data.winner === '') {
+      setState(data.board);
+      console.log(data.nextPlayer)
+      setPlayer(data.nextPlayer)
+    } else {
+      setState(data.board);
       setWinner(data.winner);
       setMarkClass(data.winnerClass);
       setPlayer(data.winner);
 
-      const updatedScore = {
-          PlayerX: data.winner === 'X' ? scoreBoard.PlayerX + 1 : scoreBoard.PlayerX,
-          PlayerO: data.winner === 'O' ? scoreBoard.PlayerO + 1 : scoreBoard.PlayerO
-      };
-      setScoreBoard(updatedScore);
+      setScoreBoard(prevScoreBoard => ({
+        PlayerX: data.winner === playerX ? prevScoreBoard.PlayerX + 1 : prevScoreBoard.PlayerX,
+        PlayerO: data.winner === playerO ? prevScoreBoard.PlayerO + 1 : prevScoreBoard.PlayerO
+      }));
     }
   };
 
@@ -65,29 +77,35 @@ const TicTacToe = () => {
     if (winner !== "") {
       return;
     }
-    const rowIndex = state.indexOf(row);
-    const boxIndex = row.indexOf(box);
+    console.log("player: ",player, "socket id: ",socket.id)
+    if (player === socket.id) { 
+      const rowIndex = state.indexOf(row);
+      const boxIndex = row.indexOf(box);
 
-    if(isNaN(state[rowIndex][boxIndex])) { 
-      return;
-    }
-    socket.emit('userMove', { roomId, rowIndex, boxIndex, player }, (data: SocketResponseType) => {
-      if (data.success) {
-        updateBoard(data.data);
-      } else {
-        console.error('Error updating the board via socket:', data.error);
+      if (isNaN(state[rowIndex][boxIndex])) {
+        return;
       }
-    });
+      socket.emit('userMove', { roomId, rowIndex, boxIndex, player }, (data: SocketResponseType) => {
+        if (data.success) {
+          updateBoard(data.data);
+        } else {
+          console.error('Error updating the board via socket:', data.error);
+        }
+      });
+    }
+    
+
   };
 
   const resetBoard = (data: ResetResponseType) => {
     setState(data.board);
-    setPlayer(winner === "X" || winner === "O" ? winner : "X");
+    setPlayer(data.nextPlayer);
     setWinner(data.winner);
     setMarkClass(data.winnerClass);
   };
 
-  const resetGameHandler = () => {    
+  const resetGameHandler = () => {
+    console.log(socket.id);
     socket.emit('userReset', { roomId }, (response: SocketResponseType) => {
       if (response.success) {
         resetBoard(response.data);
@@ -104,20 +122,21 @@ const TicTacToe = () => {
     }
   };
 
-  useMemo(() => {
-    resetGameHandler()
-  },[roomId])
+  useEffect(() => {
+    resetGameHandler();
+  }, [roomId]);
 
   return (
     <>
       <Navbar />
+
       <div className="main_container">
         {/* Game Board */}
         {state.length > 0 && (
           <div>
             {winner && (
               <div className="messageBox">
-                <h2>{`Winner is ${winner}`}</h2>
+                <h2>{`Winner is ${winner === playerX ? "X" : winner === playerO ? "O" : null}`}</h2>
                 <button onClick={resetGameHandler}>RESET</button>
               </div>
             )}
@@ -129,10 +148,10 @@ const TicTacToe = () => {
                   <div
                     className="tictactoe_box"
                     key={index}
-                    onClick={() => UpdateBoardHandler(row, box)}>{isNaN(box) && box}</div>
+                    onClick={() => UpdateBoardHandler(row, box)}>{isNaN(box) ? (box.toString() === playerX ? "X" : (box.toString() === playerO ? "O" : box)) : ""}</div>
                 ))
               )}
-              {!winner && <div className="playerName"><p>{`Player ${player}'s turn`}</p></div>}
+              {!winner && <div className="playerName"><p>{`${socket.id === playerX ? "Player X" : " Player O"}'s turn`}</p></div>}
               <div className="scoreBoard"><p>{`Player X: ${scoreBoard.PlayerX} - Player O: ${scoreBoard.PlayerO}`}</p></div>
             </div>
           </div>

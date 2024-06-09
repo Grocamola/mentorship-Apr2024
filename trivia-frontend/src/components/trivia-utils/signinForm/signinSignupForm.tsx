@@ -3,6 +3,8 @@ import useAuth from '../hooks/useAuth';
 import { useUserContext } from '../hooks/context';
 import { useSpring, animated } from "@react-spring/web";
 import useMeasure from "react-use-measure";
+import socket from '../requests/socket';
+
 
 type signInForm = {
   email: string;
@@ -29,7 +31,7 @@ const SigninSignUpForm = () => {
       if (storedUser) {
         setUser(storedUser);
       }
-    }, [setUser]);
+    }, [user]);
 
     // Animation configs
     const [hover, toggle] = useState(false);
@@ -52,6 +54,7 @@ const SigninSignUpForm = () => {
               toggle(true);
               console.log('approved user', approvedUser);
               setUser(credentials.email)
+              socket.emit('connecting')
             }
         }
     };
@@ -82,6 +85,7 @@ const SigninSignUpForm = () => {
             toggle(true);
             console.log('signed in new user.');
             setUser(approvedUser)
+            socket.emit('connecting');
             setTimeout(() => { toggle(false) }, 100);
           } else {
             console.log('check your info again. something is wrong here :|');
