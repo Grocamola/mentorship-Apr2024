@@ -31,6 +31,7 @@ let PlayerX = "";
 let PlayerO = "";
 let nextPlayer = "";
 
+
 const checkWinner = (board) => {
   for (let col = 0; col < board.length; col++) {
     if (board[0][col] === board[1][col] && board[1][col] === board[2][col]) {
