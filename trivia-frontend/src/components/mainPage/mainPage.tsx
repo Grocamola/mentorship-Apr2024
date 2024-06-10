@@ -80,6 +80,10 @@ const MainPage = () => {
         <br />
         <h2>Who do you want to play with?</h2>
         <div className="playerPick">
+        {players.filter((player) => player !== socket.id).length === 0 && <p>Please wait for others to join...</p>}
+          
+          
+          {players.filter((player) => player !== socket.id).length > 0 &&
           <div className="playerList">
             <ul>
               {players.map((player, index) => player !== socket.id && <li key={player}>
@@ -89,7 +93,7 @@ const MainPage = () => {
                 </button>
               </li>)}
             </ul>
-          </div>
+          </div>}
           {/* <div className="systemPlay">
             <div>
               <input type="checkbox" /><span>Play With Computer</span>

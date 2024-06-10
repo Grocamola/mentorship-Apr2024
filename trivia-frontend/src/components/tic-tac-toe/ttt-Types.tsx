@@ -18,6 +18,7 @@ export interface ResetResponseType {
     winner: string;
     winnerClass: string;
     nextPlayer: string;
+    isTie: boolean;
 }
   
 export interface SocketUpdateResponseType { 
@@ -25,6 +26,7 @@ export interface SocketUpdateResponseType {
     winner: string;
     winnerClass: string;
     nextPlayer: string;
+    isTie: boolean;
 }
 
 export interface PlayersType {

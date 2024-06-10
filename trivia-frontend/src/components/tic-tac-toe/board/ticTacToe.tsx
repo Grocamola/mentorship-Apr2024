@@ -6,46 +6,34 @@ import "./ticTacToe.css";
 import { ChatMessage, SocketResponseType, ResetResponseType, SocketUpdateResponseType, TicTacToeBoard, PlayersType } from '../ttt-Types';
 
 const TicTacToe = () => {
-
   const { roomId } = useParams();
-
   const [state, setState] = useState<TicTacToeBoard>([]);
   const [winner, setWinner] = useState<string>("");
   const [markClass, setMarkClass] = useState<string>('');
-
   const [player, setPlayer] = useState<string>('');
   const [players, setPlayers] = useState<PlayersType[]>([{ playerName: 'X', playerCode: '' }, { playerName: 'O', playerCode: '' }]);
-
   const [scoreBoard, setScoreBoard] = useState<{ PlayerX: number; PlayerO: number; }>({ PlayerX: 0, PlayerO: 0 });
-
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [message, setMessage] = useState<string>("");
-
   const [userId] = useState<string>(socket.id!);
-
   const playerX = players.filter(player => player.playerName === "X")[0]?.playerCode;
   const playerO = players.filter(player => player.playerName === "O")[0]?.playerCode;
 
   useEffect(() => {
     socket.emit('joinRoom', roomId);
-    console.log(socket.id)
-    // Listen for incoming chat messages
+
     socket.on("chatMessage", (data: ChatMessage) => {
       setMessages((prevMessages) => [...prevMessages, data]);
     });
 
     socket.on('resetBoard', (data: ResetResponseType) => resetBoard(data));
 
-    // Listen for updated player information
     socket.on('usersInfo', (playersData: PlayersType[]) => {
       setPlayers(playersData);
-      console.log(playersData);
     });
 
-    // Listen for board updates
     socket.on('updateUserBoard', (data: SocketUpdateResponseType) => updateBoard(data));
 
-    // Cleanup on component unmount
     return () => {
       socket.emit('leaveRoom', roomId);
       socket.off("chatMessage");
@@ -56,25 +44,27 @@ const TicTacToe = () => {
   }, [roomId]);
 
   const updateBoard = (data: SocketUpdateResponseType) => {
-    if (data.winner === '') {
+    if (data.winner === '' && !data.isTie) {
       setState(data.board);
-      console.log(data.nextPlayer)
-      setPlayer(data.nextPlayer)
+      setPlayer(data.nextPlayer);
     } else {
       setState(data.board);
       setWinner(data.winner);
       setMarkClass(data.winnerClass);
-      setPlayer(data.winner);
+      setPlayer(data.nextPlayer);
 
       setScoreBoard(prevScoreBoard => ({
         PlayerX: data.winner === playerX ? prevScoreBoard.PlayerX + 1 : prevScoreBoard.PlayerX,
         PlayerO: data.winner === playerO ? prevScoreBoard.PlayerO + 1 : prevScoreBoard.PlayerO
       }));
     }
+
+    if (data.isTie) {
+      setWinner('Tie');
+    }
   };
 
   const UpdateBoardHandler = (row: number[], box: number) => {
-    console.log("player: ",player, "socket id: ",socket.id)
     if (player === socket.id) { 
       const rowIndex = state.indexOf(row);
       const boxIndex = row.indexOf(box);
@@ -90,8 +80,6 @@ const TicTacToe = () => {
         }
       });
     }
-    
-
   };
 
   const resetBoard = (data: ResetResponseType) => {
@@ -102,7 +90,6 @@ const TicTacToe = () => {
   };
 
   const resetGameHandler = () => {
-    console.log(socket.id);
     socket.emit('userReset', { roomId }, (response: SocketResponseType) => {
       if (response.success) {
         resetBoard(response.data);
@@ -126,18 +113,15 @@ const TicTacToe = () => {
   return (
     <>
       <Navbar />
-
       <div className="main_container">
-        {/* Game Board */}
         {state.length > 0 && (
           <div>
             {winner && (
               <div className="messageBox">
-                <h2>{`Winner is ${winner === playerX ? "X" : winner === playerO ? "O" : null}`}</h2>
+                <h2>{winner === 'Tie' ? 'It\'s a Tie!' : `Winner is ${winner === playerX ? "X" : winner === playerO ? "O" : null}`}</h2>
                 <button onClick={resetGameHandler}>RESET</button>
               </div>
             )}
-
             <div className="tictactoe_boxes">
               {markClass && <div className={`markLine ${markClass}`} />}
               {state.map((row) =>

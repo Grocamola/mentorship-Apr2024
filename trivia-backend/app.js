@@ -30,53 +30,61 @@ let winnerClass = "";
 let PlayerX = "";
 let PlayerO = "";
 let nextPlayer = "";
-
+let isTie = false;
 
 const checkWinner = (board) => {
+  winner = "";
+  winnerClass = "";
+  isTie = false;
+
   for (let col = 0; col < board.length; col++) {
     if (board[0][col] === board[1][col] && board[1][col] === board[2][col]) {
       winner = board[0][col] === PlayerX ? PlayerX : PlayerO;
       winnerClass = col === 0 ? 'col-left' : col === 1 ? 'col-center' : 'col-right';
+      return;
     }
   }
   for (let row = 0; row < board.length; row++) {
     if (board[row][0] === board[row][1] && board[row][1] === board[row][2]) {
       winner = board[row][0] === PlayerX ? PlayerX : PlayerO;
       winnerClass = row === 0 ? 'row-up' : row === 1 ? 'row-center' : 'row-down';
+      return;
     }
   }
   if (board[0][0] === board[1][1] && board[1][1] === board[2][2]) {
     winner = board[0][0] === PlayerX ? PlayerX : PlayerO;
     winnerClass = 'diagonal-left';
+    return;
   }
   if (board[0][2] === board[1][1] && board[1][1] === board[2][0]) {
     winner = board[0][2] === PlayerX ? PlayerX : PlayerO;
     winnerClass = 'diagonal-right';
+    return;
   }
-}
+  if (board.flat().every(cell => isNaN(cell))) {
+    isTie = true;
+  }
+};
 
 io.on('connection', (socket) => {
-
   socket.on('connecting', () => {
-    console.log('A user connected:', socket.id);
     activeUsers[socket.id] = true;
     io.emit('activeUsers', Object.keys(activeUsers));
   });
 
-
   socket.on('disconnect', () => {
-    console.log('A user disconnected:', socket.id);
     delete activeUsers[socket.id];
     io.emit('activeUsers', Object.keys(activeUsers));
     board = [[11, 12, 13], [21, 22, 23], [31, 32, 33]];
     winner = "";
     winnerClass = "";
+    isTie = false;
   });
 
   socket.on('invite', (recipientId, senderId) => {
     const roomId = generateRoomId();
     socket.join(roomId);
-    gameRooms[roomId] = { board , winner, winnerClass };
+    gameRooms[roomId] = { board , winner, winnerClass, isTie };
     io.to(recipientId).emit('invitation', { roomId });
     io.to(senderId).emit('invitation', { roomId });
     if(recipientId) { 
@@ -87,19 +95,17 @@ io.on('connection', (socket) => {
 
   socket.on('acceptInvitation', ({ roomId }) => {
     socket.join(roomId);
-    console.log(`Invitation accepted for room ${roomId}`);
     io.to(roomId).emit('invitationAccepted');
   });
 
   socket.on('userReset', ({ roomId }, callback) => {
     board = [[11, 12, 13], [21, 22, 23], [31, 32, 33]];
-    
     nextPlayer = winner !== "" ? winner : PlayerX;
-
     winner = "";
     winnerClass = "";
+    isTie = false;
 
-    gameRooms[roomId] = { board, winner, winnerClass, nextPlayer };
+    gameRooms[roomId] = { board, winner, winnerClass, nextPlayer, isTie };
     const data = gameRooms[roomId];
     io.to(roomId).emit('resetBoard', data);
     callback({ success: true, data });
@@ -120,7 +126,7 @@ io.on('connection', (socket) => {
     checkWinner(game.board);
 
     nextPlayer = nextPlayer === PlayerX ? PlayerO : PlayerX;
-    const data = { board: game.board, winner, winnerClass, nextPlayer };
+    const data = { board: game.board, winner, winnerClass, nextPlayer, isTie };
     io.to(roomId).emit('updateUserBoard', data);
     callback({ success: true, data });
   });
