@@ -16,8 +16,8 @@ const TicTacToe = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [message, setMessage] = useState<string>("");
   const [userId] = useState<string>(socket.id!);
-  const playerX = players.filter(player => player.playerName === "X")[0]?.playerCode;
-  const playerO = players.filter(player => player.playerName === "O")[0]?.playerCode;
+  const playerX = players.find(player => player.playerName === "X")?.playerCode;
+  const playerO = players.find(player => player.playerName === "O")?.playerCode;
 
   useEffect(() => {
     socket.emit('joinRoom', roomId);
@@ -32,7 +32,9 @@ const TicTacToe = () => {
       setPlayers(playersData);
     });
 
-    socket.on('updateUserBoard', (data: SocketUpdateResponseType) => updateBoard(data));
+    socket.on('updateUserBoard', (data: SocketUpdateResponseType) => {
+      updateBoard(data);
+    });
 
     return () => {
       socket.emit('leaveRoom', roomId);
@@ -43,22 +45,27 @@ const TicTacToe = () => {
     };
   }, [roomId]);
 
+
+
   const updateBoard = (data: SocketUpdateResponseType) => {
-    if (data.winner === '' && !data.isTie) {
-      setState(data.board);
-      setPlayer(data.nextPlayer);
-    } else {
-      setState(data.board);
-      setWinner(data.winner);
+    setState(data.board);
+    setPlayer(data.nextPlayer);
+
+    console.log("playerX:", players.find(player => player.playerName === "X")?.playerCode, "playerO:", players.find(player => player.playerName === "O")?.playerCode); // Weird, without this part scoring wont work!!!
+  
+    if (data.winner || data.isTie) {
+      setWinner(data.winner || 'Tie');
       setMarkClass(data.winnerClass);
-      setPlayer(data.nextPlayer);
-
-      setScoreBoard(prevScoreBoard => ({
-        PlayerX: data.winner === playerX ? prevScoreBoard.PlayerX + 1 : prevScoreBoard.PlayerX,
-        PlayerO: data.winner === playerO ? prevScoreBoard.PlayerO + 1 : prevScoreBoard.PlayerO
-      }));
+  
+      setScoreBoard(prevScoreBoard => {
+        const newScoreBoard = {
+          PlayerX: data.winner === playerX ? prevScoreBoard.PlayerX + 1 : prevScoreBoard.PlayerX,
+          PlayerO: data.winner === playerO ? prevScoreBoard.PlayerO + 1 : prevScoreBoard.PlayerO
+        };
+        return newScoreBoard;
+      });
     }
-
+  
     if (data.isTie) {
       setWinner('Tie');
     }
@@ -74,7 +81,8 @@ const TicTacToe = () => {
       }
       socket.emit('userMove', { roomId, rowIndex, boxIndex, player }, (data: SocketResponseType) => {
         if (data.success) {
-          updateBoard(data.data);
+          // console.log("Move successful, updating board with data:", data.data); // Debugging
+          data.data.winner !== socket.id && updateBoard(data.data);
         } else {
           console.error('Error updating the board via socket:', data.error);
         }
