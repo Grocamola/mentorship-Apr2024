@@ -184,7 +184,7 @@
   /* ------ CHAT BOX ------ */
   .chatBox {
     position: flex;
-    margin-top: 150px;
+    margin-top: 160px;
     width: 100%;
     height: fit-content;
     margin-bottom: 40px;

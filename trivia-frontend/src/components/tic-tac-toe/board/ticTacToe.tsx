@@ -51,7 +51,9 @@ const TicTacToe = () => {
     setState(data.board);
     setPlayer(data.nextPlayer);
 
-    console.log("playerX:", players.find(player => player.playerName === "X")?.playerCode, "playerO:", players.find(player => player.playerName === "O")?.playerCode); // Weird, without this part scoring wont work!!!
+    console.log(
+      "playerX:", players.find(player => player.playerName === "X")?.playerCode, 
+      "playerO:", players.find(player => player.playerName === "O")?.playerCode); // Weird, without this part scoring wont work!!!
   
     if (data.winner || data.isTie) {
       setWinner(data.winner || 'Tie');
@@ -81,7 +83,6 @@ const TicTacToe = () => {
       }
       socket.emit('userMove', { roomId, rowIndex, boxIndex, player }, (data: SocketResponseType) => {
         if (data.success) {
-          // console.log("Move successful, updating board with data:", data.data); // Debugging
           data.data.winner !== socket.id && updateBoard(data.data);
         } else {
           console.error('Error updating the board via socket:', data.error);
@@ -141,6 +142,7 @@ const TicTacToe = () => {
                 ))
               )}
               {!winner && <div className="playerName"><p>{`${socket.id === playerX ? "Player X" : " Player O"}'s turn`}</p></div>}
+              {!winner && <div className="playerName">{socket.id === player ? <p style={{color: 'red', fontSize: '0.9rem', margin: 0}}>"Your turn, make your move!"</p> : <p style={{color: '#aaa', fontSize: '0.9rem', margin: 0}}>"Not your turn, maybe send a message and psych them out!"</p>}</div>}
               <div className="scoreBoard"><p>{`Player X: ${scoreBoard.PlayerX} - Player O: ${scoreBoard.PlayerO}`}</p></div>
             </div>
           </div>
