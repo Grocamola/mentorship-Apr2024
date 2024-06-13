@@ -16,25 +16,22 @@ const TicTacToe = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [message, setMessage] = useState<string>("");
   const [userId] = useState<string>(socket.id!);
-  const playerX = players.find(player => player.playerName === "X")?.playerCode;
-  const playerO = players.find(player => player.playerName === "O")?.playerCode;
+  var playerX = players.find(player => player.playerName === "X")?.playerCode;
+  var playerO = players.find(player => player.playerName === "O")?.playerCode;
+
 
   useEffect(() => {
     socket.emit('joinRoom', roomId);
 
-    socket.on("chatMessage", (data: ChatMessage) => {
-      setMessages((prevMessages) => [...prevMessages, data]);
-    });
+    socket.on("chatMessage", (data: ChatMessage) => setMessages((prevMessages) => [...prevMessages, data]));
 
     socket.on('resetBoard', (data: ResetResponseType) => resetBoard(data));
 
     socket.on('usersInfo', (playersData: PlayersType[]) => {
-      setPlayers(playersData);
+      setPlayers(playersData);  // Update the players state here
     });
 
-    socket.on('updateUserBoard', (data: SocketUpdateResponseType) => {
-      updateBoard(data);
-    });
+    socket.on('updateUserBoard', (data: SocketUpdateResponseType) => updateBoard(data));
 
     return () => {
       socket.emit('leaveRoom', roomId);
@@ -48,24 +45,27 @@ const TicTacToe = () => {
 
 
   const updateBoard = (data: SocketUpdateResponseType) => {
+    console.log(data)
     setState(data.board);
     setPlayer(data.nextPlayer);
 
+    playerX = players.find(player => player.playerName === "X")?.playerCode;
+    playerO = players.find(player => player.playerName === "O")?.playerCode;
+
+
     console.log(
-      "playerX:", players.find(player => player.playerName === "X")?.playerCode, 
-      "playerO:", players.find(player => player.playerName === "O")?.playerCode); // Weird, without this part scoring wont work!!!
+      "playerX:", playerX, 
+      "playerO:", playerO
+    ); 
   
     if (data.winner || data.isTie) {
       setWinner(data.winner || 'Tie');
       setMarkClass(data.winnerClass);
-  
-      setScoreBoard(prevScoreBoard => {
-        const newScoreBoard = {
-          PlayerX: data.winner === playerX ? prevScoreBoard.PlayerX + 1 : prevScoreBoard.PlayerX,
-          PlayerO: data.winner === playerO ? prevScoreBoard.PlayerO + 1 : prevScoreBoard.PlayerO
-        };
-        return newScoreBoard;
-      });
+    
+      setScoreBoard(prevScoreBoard => ({
+        PlayerX: data.winner === playerX ? prevScoreBoard.PlayerX + 1 : prevScoreBoard.PlayerX,
+        PlayerO: data.winner === playerO ? prevScoreBoard.PlayerO + 1 : prevScoreBoard.PlayerO
+      }));
     }
   
     if (data.isTie) {

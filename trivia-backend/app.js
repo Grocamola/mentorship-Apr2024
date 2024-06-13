@@ -127,6 +127,7 @@ io.on('connection', (socket) => {
 
     nextPlayer = nextPlayer === PlayerX ? PlayerO : PlayerX;
     const data = { board: game.board, winner, winnerClass, nextPlayer, isTie };
+    console.log(winner)
     io.to(roomId).emit('updateUserBoard', data);
     callback({ success: true, data });
   });
