@@ -16,8 +16,11 @@ const TicTacToe = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [message, setMessage] = useState<string>("");
   const [userId] = useState<string>(socket.id!);
-  var playerX = players.find(player => player.playerName === "X")?.playerCode;
-  var playerO = players.find(player => player.playerName === "O")?.playerCode;
+  // var playerX = players.find(player => player.playerName === "X")?.playerCode;
+  // var playerO = players.find(player => player.playerName === "O")?.playerCode;
+
+  const [playerX, setPlayerX] = useState<string>()
+  const [playerO, setPlayerO] = useState<string>()
 
 
   useEffect(() => {
@@ -40,8 +43,9 @@ const TicTacToe = () => {
       socket.off('resetBoard');
       socket.off('usersInfo');
     };
-  }, [roomId]);
+  }, [roomId, state]);
 
+  
 
 
   const updateBoard = (data: SocketUpdateResponseType) => {
@@ -49,8 +53,8 @@ const TicTacToe = () => {
     setState(data.board);
     setPlayer(data.nextPlayer);
 
-    playerX = players.find(player => player.playerName === "X")?.playerCode;
-    playerO = players.find(player => player.playerName === "O")?.playerCode;
+    setPlayerX(() => players.find(player => player.playerName === "X")?.playerCode)
+    setPlayerO(() => players.find(player => player.playerName === "O")?.playerCode)
 
 
     console.log(
@@ -62,6 +66,7 @@ const TicTacToe = () => {
       setWinner(data.winner || 'Tie');
       setMarkClass(data.winnerClass);
     
+      console.log(data.winner, playerX, playerO)
       setScoreBoard(prevScoreBoard => ({
         PlayerX: data.winner === playerX ? prevScoreBoard.PlayerX + 1 : prevScoreBoard.PlayerX,
         PlayerO: data.winner === playerO ? prevScoreBoard.PlayerO + 1 : prevScoreBoard.PlayerO
